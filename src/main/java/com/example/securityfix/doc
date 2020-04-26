@@ -1,0 +1,60 @@
+问题描述：
+敏感信息明文传输，系统登录账户、密码、身份证、手机号等敏感信息以明文方式在网络上传输，外人通过抓包工具这些信息存在被中间人劫持的风险
+如获得重要业务数据和重要个人信息，导致重要业务数据和个人信息泄露，如获得用户鉴别信息，攻击者可直接获取该用户登录账户，从而进行进一步渗透。
+
+
+问题接口方案：
+通过前端js base64加密，服务端获取到加密后的字符串，DecryptUtil.code()方法进行解密，即可确保客户信息被泄露的风险
+
+前端：
+
+<div class="container-fluid">
+    <div class="row login-wrapper" align="center">
+        <div class="col-md-4 box">
+            <div class="content-wrap">
+                <h6>登录</h6>
+                <h7 id="errormsg" style="color:red;line-height: 20px;">#if($!msg) $!msg #end</h7>
+                <form class="form-horizontal" role="form" id="loginform" action="$!{path}/admin/userLogin" method="post">
+                    <input type="text" class="form-control"id="username" name="username" placeholder="用户名">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="密码">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="login()">登录
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+$("#username").val(encode64($("#username").val()));//获取用户名
+
+ // base64加密开始
+    var keyStr = "ABCDEFGHIJKLMNOP" + "QRSTUVWXYZabcdef" + "ghijklmnopqrstuv" + "wxyz0123456789+/" + "=";
+
+    function encode64(input) {
+        var output = "";
+        var chr1, chr2, chr3 = "";
+        var enc1, enc2, enc3, enc4 = "";
+        var i = 0;
+        do {
+            chr1 = input.charCodeAt(i++);
+            chr2 = input.charCodeAt(i++);
+            chr3 = input.charCodeAt(i++);
+            enc1 = chr1 >> 2;
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+            enc4 = chr3 & 63;
+            if (isNaN(chr2)) {
+                enc3 = enc4 = 64;
+            } else if (isNaN(chr3)) {
+                enc4 = 64;
+            }
+            output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2)
+                    + keyStr.charAt(enc3) + keyStr.charAt(enc4);
+            chr1 = chr2 = chr3 = "";
+            enc1 = enc2 = enc3 = enc4 = "";
+        } while (i < input.length);
+        return output;
+    }
+
+    // base64加密结束
