@@ -1,13 +1,14 @@
-package com.example.springboottest;
+package com.example.demo;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-public class TestController {
 
-    @RequestMapping("/handler")
+@RestController
+public class HelloWordController {
+
+    @RequestMapping("/")//请求路径
     public String handler(){
-        return "ok";
+        return "Hello Spring Boot!";
     }
 }
